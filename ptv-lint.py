@@ -12,7 +12,7 @@ SOURCE="http://data.ptv.vic.gov.au/downloads/gtfs.zip"
 PATH="gtfs.zip"
 UPDATE_DATA=False
 # 4:"MetroBus",8:"NightRider"
-TRUSTED_DATA={2:"MetroTrain",3:"MetroTram"}
+TRUSTED_DATA={1: "RegionalTrain", 2:"MetroTrain",3:"MetroTram", 4:"MetroBus",5:"RegionalCoach",6:"RegionalBus",7:"TeleBus",8:"NightRider",10:"Interstate",11:"SkyBus"}
 
 if UPDATE_DATA:
     r = requests.get(SOURCE, stream=True)
@@ -28,6 +28,7 @@ writableStops=[]
 stopCounter={}
 stoplatln={}
 stopCompress={}
+
 def merge_data(header,file_name):
     data = []
     skippable_trips = list(set(stopCounter.keys()) - set(writableStops))
@@ -44,6 +45,8 @@ def merge_data(header,file_name):
                         row[3] = stopCompress[row[3]]
                 if TRUSTED_DATA[type] == "MetroTrain" and file_name == "routes.txt":
                     if(row[3] not in routeNames): #this is to merge route names
+                        if row[2] == ":":
+                            row[2]=""
                         routeNames[row[3]]=row[0]
                         row[2]=""
                         writer.writerow(row)
@@ -66,11 +69,11 @@ def merge_data(header,file_name):
                         data.append(output.getvalue().rstrip('\r\n'))
                 elif TRUSTED_DATA[type] == "MetroTrain" and file_name == "stop_times.txt":
                     # Caulfield Railway Station hack
-                    if( row[3] == "19943" and not("PKM" in row[0] or "CRB" in row[0] or "FKN" in row[0])):
+                    #if( row[3] == "19943" and not("PKM" in row[0] or "CRB" in row[0] or "FKN" in row[0])):
                     #    print "Skipping this stop because it looks like it's invalid " + ",".join(row)
-                        pass
+                    #    pass
                     #only write trips that stop more than once
-                    elif (row[0] in stopCounter):
+                    if (row[0] in stopCounter):
                         writer.writerow(row)
                         data.append(output.getvalue().rstrip('\r\n'))
                         data.append(stopCounter[row[0]])
