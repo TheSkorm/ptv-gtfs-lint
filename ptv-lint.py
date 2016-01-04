@@ -43,10 +43,8 @@ def merge_data(header,file_name):
                 if file_name == "stop_times.txt": #this is to do the stop id replacement - see below
                     if(row[3] in stopCompress):
                         row[3] = stopCompress[row[3]]
-                if TRUSTED_DATA[type] == "MetroTrain" and file_name == "routes.txt":
-                    if(row[3] not in routeNames): #this is to merge route names
-                        if row[2] == ":":
-                            row[2]=""
+                if TRUSTED_DATA[type] == "MetroTrain" or TRUSTED_DATA[type] == "RegionalTrain" and file_name == "routes.txt":
+                    if(row[3] not in routeNames): #this is to merge route names"
                         routeNames[row[3]]=row[0]
                         row[2]=""
                         writer.writerow(row)
